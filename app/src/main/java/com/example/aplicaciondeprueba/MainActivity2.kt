@@ -94,8 +94,15 @@ class MainActivity2 : AppCompatActivity() {
         // Si isEditing es false, se cambia a true.
 
         buttonBack.setOnClickListener {
-            finish() // O vuelve a la actividad anterior
+            val intent = Intent()
+            intent.putExtra("CLEAR_FIELDS", true)
+            setResult(RESULT_OK, intent)
+            finish()
+        // cuando el usuario presione el botón "volver" en la segunda actividad, se devuelva un resultado a la actividad principal
+        // con un Intent que contiene un valor indicando que los campos deben ser limpiados. Luego, la segunda actividad se cierra,
+        // y la primera actividad recibe el valor y limpia los campos, según el código en onActivityResult.
         }
+
         // Añadir el TextWatcher para validar el RUT
         editTextRUT.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}

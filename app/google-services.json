@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "877819081979",
+    "project_id": "aplicacion-de-prueba-81514",
+    "storage_bucket": "aplicacion-de-prueba-81514.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877819081979:android:f985b6636c028e1af4ac5e",
+        "android_client_info": {
+          "package_name": "com.example.aplicaciondeprueba"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDswFb81SZ_kGTGzJ45P7B9Cy82HJUV6VM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

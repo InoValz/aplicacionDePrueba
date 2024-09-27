@@ -8,8 +8,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity2 : AppCompatActivity() {
 
@@ -29,15 +30,23 @@ class MainActivity2 : AppCompatActivity() {
 
     private var isEditing = false
 
+    // Agrega la referencia a la base de datos de Firebase
+    private lateinit var database: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
+        // Inicializar Firebase
+        database = FirebaseDatabase.getInstance().getReference("users")
+
+        // Referencias a los botones
         val buttonBack: Button = findViewById(R.id.buttonBack)
         val buttonEdit: Button = findViewById(R.id.buttonEdit)
         val buttonSave: Button = findViewById(R.id.buttonSave)
         val buttonDelete: Button = findViewById(R.id.buttonDelete) // Botón de eliminar
 
+        // Referencias a los TextView para mostrar la información
         textViewEmail = findViewById(R.id.textViewEmail)
         textViewPassword = findViewById(R.id.textViewPassword)
         textViewRUT = findViewById(R.id.textViewRUT)
@@ -45,6 +54,7 @@ class MainActivity2 : AppCompatActivity() {
         textViewFullName = findViewById(R.id.textViewFullName)
         textViewAddress = findViewById(R.id.textViewAddress)
 
+        // Referencias a los EditText para editar la información
         editTextEmail = findViewById(R.id.editTextEmail)
         editTextPassword = findViewById(R.id.editTextPassword)
         editTextRUT = findViewById(R.id.editTextRUT)
@@ -52,10 +62,13 @@ class MainActivity2 : AppCompatActivity() {
         editTextFullName = findViewById(R.id.editTextFullName)
         editTextAddress = findViewById(R.id.editTextAddress)
 
+        // Habilitar o deshabilitar el modo de edición
         toggleEditMode(false)
 
         val intent = intent
+        val userId = intent.getStringExtra("USER_ID") // Recibe el USER_ID
 
+        // Asignar los datos recibidos
         textViewEmail.text = intent.getStringExtra("EXTRA_TEXTO")
         textViewPassword.text = intent.getStringExtra("EXTRA_TEXTO2")
         textViewRUT.text = intent.getStringExtra("EXTRA_TEXTO3")
@@ -65,23 +78,21 @@ class MainActivity2 : AppCompatActivity() {
 
         buttonEdit.setOnClickListener {
             isEditing = !isEditing
-            if (isEditing) {
-                toggleEditMode(true)
-            } else {
-                saveChanges()
-                toggleEditMode(false)
-            }
+            toggleEditMode(isEditing)
         }
 
         buttonBack.setOnClickListener {
-            val intent = Intent()
             intent.putExtra("CLEAR_FIELDS", true)
             setResult(RESULT_OK, intent)
             finish()
         }
 
+        buttonSave.setOnClickListener {
+            saveChanges(userId) // Guardar cambios en Firebase
+        }
+
         buttonDelete.setOnClickListener {
-            deleteData(buttonSave, buttonEdit) // Función para borrar datos y deshabilitar botones
+            deleteData(userId, buttonSave, buttonEdit, buttonDelete)
         }
 
         editTextRUT.addTextChangedListener(object : TextWatcher {
@@ -101,8 +112,10 @@ class MainActivity2 : AppCompatActivity() {
         })
     }
 
+    // Método para alternar entre el modo de edición y visualización
     private fun toggleEditMode(enable: Boolean) {
         if (enable) {
+            // Ocultar los TextView y mostrar los EditText
             textViewEmail.visibility = TextView.GONE
             textViewPassword.visibility = TextView.GONE
             textViewRUT.visibility = TextView.GONE
@@ -117,6 +130,7 @@ class MainActivity2 : AppCompatActivity() {
             editTextFullName.visibility = EditText.VISIBLE
             editTextAddress.visibility = EditText.VISIBLE
 
+            // Pasar el texto de los TextView a los EditText
             editTextEmail.setText(textViewEmail.text.toString())
             editTextPassword.setText(textViewPassword.text.toString())
             editTextRUT.setText(textViewRUT.text.toString())
@@ -125,6 +139,7 @@ class MainActivity2 : AppCompatActivity() {
             editTextAddress.setText(textViewAddress.text.toString())
 
         } else {
+            // Mostrar los TextView y ocultar los EditText
             textViewEmail.visibility = TextView.VISIBLE
             textViewPassword.visibility = TextView.VISIBLE
             textViewRUT.visibility = TextView.VISIBLE
@@ -141,17 +156,48 @@ class MainActivity2 : AppCompatActivity() {
         }
     }
 
-    private fun saveChanges() {
+    private fun saveChanges(userId: String?) {
         textViewEmail.text = editTextEmail.text.toString()
         textViewPassword.text = editTextPassword.text.toString()
         textViewRUT.text = editTextRUT.text.toString()
         textViewPhone.text = editTextPhone.text.toString()
         textViewFullName.text = editTextFullName.text.toString()
         textViewAddress.text = editTextAddress.text.toString()
+
+        // Verificar si el userId es válido
+        if (!userId.isNullOrEmpty()) { // Verifica que userId no sea nulo o vacío
+            // Crear un mapa con los datos actualizados
+            val updatedUserData = mapOf(
+                "email" to textViewEmail.text.toString(),
+                "password" to textViewPassword.text.toString(),
+                "rut" to textViewRUT.text.toString(),
+                "phone" to textViewPhone.text.toString(),
+                "fullName" to textViewFullName.text.toString(),
+                "address" to textViewAddress.text.toString()
+            )
+
+            // Actualizar los datos en Firebase
+            database.child(userId).updateChildren(updatedUserData).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Toast.makeText(this, "Datos actualizados con éxito", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Error al actualizar los datos", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(this, "No se encontró el ID del usuario", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Borrar los datos y deshabilitar botones
-    private fun deleteData(buttonSave: Button, buttonEdit: Button) {
+    private fun deleteData(
+        userId: String?,
+        buttonSave: Button,
+        buttonEdit: Button,
+        buttonDelete: Button
+    ) {
+
+        // Limpiar los EditText
         editTextEmail.setText("")
         editTextPassword.setText("")
         editTextRUT.setText("")
@@ -159,6 +205,7 @@ class MainActivity2 : AppCompatActivity() {
         editTextFullName.setText("")
         editTextAddress.setText("")
 
+        // Limpiar los TextViews
         textViewEmail.text = ""
         textViewPassword.text = ""
         textViewRUT.text = ""
@@ -169,8 +216,19 @@ class MainActivity2 : AppCompatActivity() {
         // Deshabilitar botones de guardar y editar
         buttonSave.isEnabled = false
         buttonEdit.isEnabled = false
+        buttonDelete.isEnabled = false
 
-        // Mostrar mensaje de "Información eliminada"
-        Toast.makeText(this, "Información eliminada", Toast.LENGTH_SHORT).show()
+        // Borrar los datos de Firebase si el userId es válido
+        if (userId != null) {
+            database.child(userId).removeValue().addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Toast.makeText(this, "Información eliminada", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Error al eliminar la información", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(this, "No se encontró el ID del usuario", Toast.LENGTH_SHORT).show()
+        }
     }
 }

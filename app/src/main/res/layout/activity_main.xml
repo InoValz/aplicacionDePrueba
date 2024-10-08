@@ -176,4 +176,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_default="spread" />
 
+    <!-- Botón de Registro -->
+    <Button
+        android:id="@+id/buttonInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Información"
+        android:textAllCaps="false"
+        android:padding="16dp"
+        android:backgroundTint="@color/black"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/buttonRegister"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_default="spread" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -45,6 +45,7 @@ class MainActivity2 : AppCompatActivity() {
         val buttonEdit: Button = findViewById(R.id.buttonEdit)
         val buttonSave: Button = findViewById(R.id.buttonSave)
         val buttonDelete: Button = findViewById(R.id.buttonDelete) // Botón de eliminar
+        val buttonNext: Button = findViewById(R.id.buttonNext) // Botón siguiente
 
         // Referencias a los TextView para mostrar la información
         textViewEmail = findViewById(R.id.textViewEmail)
@@ -93,6 +94,13 @@ class MainActivity2 : AppCompatActivity() {
 
         buttonDelete.setOnClickListener {
             deleteData(userId, buttonSave, buttonEdit, buttonDelete)
+        }
+
+        // Botón siguiente
+        buttonNext.setOnClickListener {
+            val intent = Intent(this, MainActivity3::class.java)
+            startActivity(intent)
+            finish()
         }
 
         editTextRUT.addTextChangedListener(object : TextWatcher {

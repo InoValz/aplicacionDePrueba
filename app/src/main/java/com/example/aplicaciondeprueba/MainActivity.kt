@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance().getReference("users")
 
         // Referencias a los elementos del layout
+        val buttonInfo: Button = findViewById(R.id.buttonInfo)
         val buttonRegister: Button = findViewById(R.id.buttonRegister)
         val editTextEmail: EditText = findViewById(R.id.editTextEmail)
         val editTextPassword: EditText = findViewById(R.id.editTextPassword)
@@ -58,6 +59,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        // Botón para regresar
+        buttonInfo.setOnClickListener {
+            val intent = Intent(this, MainActivity3::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         // Acción del botón de registro
         buttonRegister.setOnClickListener {
